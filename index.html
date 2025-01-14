@@ -60,12 +60,11 @@
         top: -50px;
         left: 50%;
         transform: translateX(-50%);
-        background: rgba(0, 0, 0, 0.8);
+        background: rgba(0, 0, 0, 0.5);
         color: white;
         padding: 3px 5px;
         font-size: 20px;
         border-radius: 3px;
-        display: none; /* ซ่อนในเดสก์ท็อป */
         text-align: center;
         font-family: 'Kanit', sans-serif; /* กำหนดฟอนต์เป็น Kanit */
     }
@@ -305,6 +304,116 @@
 
     #closeMenu:hover {
         color: red;
+    }
+
+    /* ปรับขนาดสำหรับหน้าจอขนาดเล็ก */
+    @media (max-width: 768px)  {
+        .custom-tooltip {
+            padding: 3px 8px; /* ลด Padding */
+            font-size: 10px; /* ลดขนาดฟอนต์ */
+            border-radius: 3px; /* ลดความโค้งมน */
+        }
+
+        .custom-tooltip img {
+            width: 20px; /* เพิ่มขนาดไอคอนสำหรับมือถือ */
+            height: 20px; /* เพิ่มขนาดไอคอนสำหรับมือถือ */
+        }
+    }
+
+    @media (max-width: 768px)  {
+        .tooltip-label {
+            top: -20px;
+            left: 50%;
+            padding: 3px 8px; /* ลด Padding */
+            font-size: 10px; /* ลดขนาดฟอนต์ */
+            border-radius: 3px; /* ลดความโค้งมน */
+        }
+
+        #videoOverlay {
+            width: 80%;
+        }
+
+        #videoOverlay iframe {
+            width: 100%; /* ให้ใหญ่ขึ้นสำหรับมือถือ */
+        }
+
+        #closeButton {
+            width: 20px;
+            height: 20px;
+        }
+
+        #closeButton::before {
+            font-size: 20px;
+        }
+
+        .popup-icon img {
+            width: 36px;
+            height: 36px;
+        }
+
+        .popup-icon {
+            top: 20px;
+            right: 20px;
+            width: 36px;
+            height: 36px;
+        }
+
+        .popup-icon:hover {
+            background-color: rgba(0, 0, 0, 0.301); /* สีพื้นหลังที่เปลี่ยนเมื่อ hover */
+            transform: scale(1.1); /* ขยายขนาดขึ้นเล็กน้อย */
+        }
+
+        .popup-window {
+            width: 60%;
+            max-width: 768px;
+            top: 210px;
+        }
+
+        .popup-buttons-container {
+            grid-template-columns: 1fr;
+        }
+
+        .popup-button {
+            font-size: 10px;
+            padding: 8px;
+            font-family: 'Kanit', sans-serif; /* กำหนดฟอนต์เป็น Kanit */
+        }
+
+        .custom-hotspot img {
+            width: 24px;
+            height: 24px;
+        }
+
+        .custom-hotspot span {
+            font-size: 10px;
+            font-family: 'Kanit', sans-serif; /* กำหนดฟอนต์เป็น Kanit */
+        }
+
+        #closePopup {
+            width: 19px;
+            height: 19px;
+            font-size: 16px;
+            font-family: 'Kanit', sans-serif; /* กำหนดฟอนต์เป็น Kanit */
+        }
+
+        #menuButton {
+            width: 180px;
+        }
+
+        .menuBox {
+            width: 150px;
+            top: 80px; /* ตำแหน่งต่ำกว่า menuButton เล็กน้อย */
+            left: 50%; /* กึ่งกลางแนวนอน */
+        }
+
+        .menuItem {
+            font-size: 10px;
+            font-weight: 700; /* ฟอนต์หนา */
+        }
+
+        #closeMenu {
+            font-size: 16px;
+        }
     }
       </style>
   </head>
@@ -2023,8 +2132,8 @@
       }
   
       //สร้าง hotspot พร้อมข้อควมแสดงสถานที่................................................................................................................
-  
-      function hotspotWithLabel(hotSpotDiv, args) {
+  // Function to create a hotspot with a label that is always displayed
+function hotspotWithLabel(hotSpotDiv, args) {
     hotSpotDiv.classList.add('custom-tooltip');
     
     // สร้างสัญลักษณ์ hotspot
@@ -2047,25 +2156,15 @@
     span.innerHTML = args.label;
     hotSpotDiv.appendChild(span);
 
-    // แสดงข้อความเฉพาะในมือถือ
-    if (window.innerWidth <= 768) {
-        span.style.display = 'block';
-    }
-
-    hotSpotDiv.onmouseover = function() {
-        span.style.display = 'block';
-    };
-    hotSpotDiv.onmouseout = function() {
-        if (window.innerWidth > 768) {
-            span.style.display = 'none';
-        }
-    };
+    // แสดงข้อความตลอดเวลา
+    span.style.display = 'block';
 
     // จัดการการคลิกเพื่อเปลี่ยน scene
     hotSpotDiv.onclick = function() {
         viewer.loadScene(args.targetScene, null, args.yawTarget); // เพิ่ม args.yawTarget สำหรับการเปลี่ยน scene
     };
 }
+    
   
   //สร้าง hotspot ที่มี popup window พร้อมการแพนหน้าจอ...............................................................................................................
   
