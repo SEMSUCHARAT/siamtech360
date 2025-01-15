@@ -2254,11 +2254,14 @@ function hotspotWithLabel(hotSpotDiv, args) {
     hotSpotDiv.appendChild(icon);
 
     // เพิ่มขนาดไอคอนสำหรับมือถือ
-    if (window.innerWidth <= 768) {
-        icon.style.width = '40px';
-        icon.style.height = '40px';
+    if (window.innerWidth <= 768)  {
+        icon.style.width = '30px';
+        icon.style.height = '30px';
     }
-
+    if (window.innerWidth >= 800 && window.innerWidth <= 1080) {
+    icon.style.width = '30px';
+    icon.style.height = '30px';
+}
     // สร้างข้อความ tooltip
     const span = document.createElement('span');
     span.classList.add('tooltip-label');
