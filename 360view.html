@@ -439,16 +439,21 @@
         }
 
         #videoOverlay {
-            width: 70%;
-            top: 50%;
-            align-items: center;
-        }
+    width: 50%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-        #videoOverlay iframe {
-            width: 100%; /* ให้ใหญ่ขึ้นสำหรับมือถือ */
-            top: 50%;
-            align-items: center;
-        }
+#videoOverlay iframe {
+    width: 100%;
+    height: auto;
+    display: block;
+}
 
         #closeButton {
             width: 20px;
