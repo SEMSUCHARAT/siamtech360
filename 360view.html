@@ -434,21 +434,22 @@
         }
 
         #videoOverlay {
-    width: 50%;
-    position: fixed;
-    top: 60%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+            width: 50%;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            display: none; /* ซ่อน videoOverlay */
+        }
 
-#videoOverlay iframe {
-    width: 100%;
-    height: auto;
-    display: block;
-}
+        #videoOverlay iframe {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
 
         #closeButton {
             width: 20px;
@@ -491,7 +492,7 @@
             padding: 8px;
             font-family: 'Kanit', sans-serif; /* กำหนดฟอนต์เป็น Kanit */
         }
-        
+
         .custom-hotspot span {
             font-size: 10px;
             font-family: 'Kanit', sans-serif; /* กำหนดฟอนต์เป็น Kanit */
@@ -2254,8 +2255,8 @@ function hotspotWithLabel(hotSpotDiv, args) {
 
     // เพิ่มขนาดไอคอนสำหรับมือถือ
     if (window.innerWidth <= 768) {
-        icon.style.width = '24px';
-        icon.style.height = '24px';
+        icon.style.width = '40px';
+        icon.style.height = '40px';
     }
 
     // สร้างข้อความ tooltip
