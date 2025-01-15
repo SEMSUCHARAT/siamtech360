@@ -444,6 +444,9 @@
 
         #videoOverlay iframe {
             width: 100%; /* ให้ใหญ่ขึ้นสำหรับมือถือ */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         #closeButton {
@@ -2511,6 +2514,7 @@ function handleClickOutside(event) {
         if (isMenuOpen) {
             hideMenuBox();      // ซ่อน menuBox ถ้าไม่ได้คลิกใน menu และ menu เปิดอยู่
         }
+        
     }
 }
 
