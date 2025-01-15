@@ -152,18 +152,18 @@
 
     /* Popup Window */
     .popup-window {
-        display: none;
-        position: fixed;
-        top: 350px; /* ตำแหน่งต่ำกว่า menuBox มากขึ้น */
-        left: 50%;
-        transform: translateX(-50%);
-        width: 30%;
-        background-color: rgba(0, 0, 0, 0.9);
-        border-radius: 10px;
-        padding: 20px;
-        text-align: center;
-        z-index: 9999;
-    }
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 15%;
+    background-color: rgba(0, 0, 0, 0.9);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    z-index: 9999;
+}
 
     .popup-window h2 {
         color: white;
@@ -378,9 +378,19 @@
         }
 
         .popup-window {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            z-index: 9999;
             width: 60%;
             max-width: 768px;
-            top: 210px;
+
         }
 
         .popup-buttons-container {
@@ -478,9 +488,18 @@
         }
 
         .popup-window {
-            width: 30%;
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            z-index: 9999;
+            width: 20%;
             max-width: 768px;
-            top: 70px;
         }
 
         .popup-buttons-container {
@@ -2399,7 +2418,21 @@ function hotspotWithLabel(hotSpotDiv, args) {
   
       popupWindow.style.display = 'block'; // แสดง popup-window
   }
-  
+  // Function to toggle the popup window
+function togglePopupWindow() {
+    const popupWindow = document.getElementById('popupWindow');
+    const menuBox = document.querySelector('.menuBox');
+    const isMenuOpen = menuBox.style.display === 'block';
+
+    if (popupWindow.style.display === 'block') {
+        hidePopupWindow();
+    } else {
+        if (isMenuOpen) {
+            hideMenuBox();  // ซ่อน menuBox ถ้า menu เปิดอยู่
+        }
+        showPopupWindow();
+    }
+}
   function hidePopupWindow() {
       const popupWindow = document.getElementById('popupWindow');
       popupWindow.style.display = 'none'; // ซ่อน popup-window
@@ -2421,11 +2454,11 @@ function hotspotWithLabel(hotSpotDiv, args) {
   });
   
   
-  // Add event listener to the popup button
-  document.getElementById('popupButton').addEventListener('click', togglePopupWindow);
-  
-  // Add event listener to the close button in the popup
-  document.getElementById('closePopup').addEventListener('click', hidePopupWindow);
+// Add event listener to the popup button
+document.getElementById('popupButton').addEventListener('click', togglePopupWindow);
+
+// Add event listener to the close button in the popup
+document.getElementById('closePopup').addEventListener('click', hidePopupWindow);
   
   // Ensure the popup button is visible in Fullscreen mode
   document.addEventListener('fullscreenchange', () => {
@@ -2465,37 +2498,42 @@ function hotspotWithLabel(hotSpotDiv, args) {
   
 
   //ปุ่มเมนู................................................................................
-  // Function to hide the menu box
-  function hideMenuBox() {
-      const menuBox = document.querySelector('.menuBox');
-      menuBox.style.display = 'none';
-  }
+// Function to hide the menu box
+function hideMenuBox() {
+    const menuBox = document.querySelector('.menuBox');
+    menuBox.style.display = 'none';
+}
 
-  // Function to show the menu box
-  function showMenuBox() {
-      const menuBox = document.querySelector('.menuBox');
-      menuBox.style.display = 'block';
-  }
+// Function to show the menu box
+function showMenuBox() {
+    const menuBox = document.querySelector('.menuBox');
+    menuBox.style.display = 'block';
+}
 
   // Function to toggle the menu box
-  function toggleMenuBox() {
-      const menuBox = document.querySelector('.menuBox');
-      if (menuBox.style.display === 'block') {
-          hideMenuBox();
-      } else {
-          showMenuBox();
-      }
-  }
+function toggleMenuBox() {
+    const menuBox = document.querySelector('.menuBox');
+    const popupWindow = document.getElementById('popupWindow');
+    const isPopupOpen = popupWindow.style.display === 'block';
+
+    if (menuBox.style.display === 'block') {
+        hideMenuBox();
+    } else {
+        if (isPopupOpen) {
+            hidePopupWindow();  // ซ่อน popup-window ถ้า popup เปิดอยู่
+        }
+        showMenuBox();
+    }
+}
 
   // Add event listener to close button inside the menu box
   document.getElementById('closeMenu').addEventListener('click', hideMenuBox);
 
   // Add event listener to menu button
-  document.getElementById('menuButton').addEventListener('click', toggleMenuBox);
-
+document.getElementById('menuButton').addEventListener('click', toggleMenuBox);
   //////////////////////ปุ่มปิด//////////////////////////
  
- // Function to hide popup window and menu box when clicking outside of them
+// Function to hide popup window and menu box when clicking outside of them
 function handleClickOutside(event) {
     const popupWindow = document.getElementById('popupWindow');
     const menuBox = document.querySelector('.menuBox');
@@ -2503,8 +2541,8 @@ function handleClickOutside(event) {
     const isClickInsideMenu = menuBox.contains(event.target);
     const isClickOnHotspot = event.target.closest('.custom-hotspot') !== null;
 
-     // ตรวจสอบว่า popup window หรือ menu box เปิดอยู่หรือไม่
-     const isPopupOpen = popupWindow.style.display === 'block';
+    // ตรวจสอบว่า popup window หรือ menu box เปิดอยู่หรือไม่
+    const isPopupOpen = popupWindow.style.display === 'block';
     const isMenuOpen = menuBox.style.display === 'block';
 
     if (!isClickInsidePopup && !isClickInsideMenu && !isClickOnHotspot) {
@@ -2535,11 +2573,7 @@ function hidePopupWindow() {
     startAutoPan(); // เริ่มการแพน
 }
 
-// Function to hide the menu box
-function hideMenuBox() {
-    const menuBox = document.querySelector('.menuBox');
-    menuBox.style.display = 'none';
-}
+
 </script>
   </body>
   </html>
