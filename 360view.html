@@ -394,8 +394,10 @@
         }
 
         .popup-buttons-container {
-            grid-template-columns: 1fr;
-        }
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
 
         .popup-button {
             font-size: 16px;
@@ -446,7 +448,7 @@
         #videoOverlay {
             width: 50%;
             position: fixed;
-            top: 50%;
+            top: 60%;
             left: 50%;
             transform: translate(-50%, -50%);
             display: flex;
@@ -503,8 +505,10 @@
         }
 
         .popup-buttons-container {
-            grid-template-columns: 1fr;
-        }
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
 
         .popup-button {
             font-size: 16px;
