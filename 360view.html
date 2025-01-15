@@ -2493,7 +2493,7 @@ function hotspotWithLabel(hotSpotDiv, args) {
   // Add event listener to menu button
   document.getElementById('menuButton').addEventListener('click', toggleMenuBox);
 
-  ////////////////////////////////////////////////
+  //////////////////////ปุ่มปิด//////////////////////////
  
  // Function to hide popup window and menu box when clicking outside of them
 function handleClickOutside(event) {
@@ -2503,8 +2503,8 @@ function handleClickOutside(event) {
     const isClickInsideMenu = menuBox.contains(event.target);
     const isClickOnHotspot = event.target.closest('.custom-hotspot') !== null;
 
-    // ตรวจสอบว่า popup window หรือ menu box เปิดอยู่หรือไม่
-    const isPopupOpen = popupWindow.style.display === 'block';
+     // ตรวจสอบว่า popup window หรือ menu box เปิดอยู่หรือไม่
+     const isPopupOpen = popupWindow.style.display === 'block';
     const isMenuOpen = menuBox.style.display === 'block';
 
     if (!isClickInsidePopup && !isClickInsideMenu && !isClickOnHotspot) {
@@ -2514,7 +2514,13 @@ function handleClickOutside(event) {
         if (isMenuOpen) {
             hideMenuBox();      // ซ่อน menuBox ถ้าไม่ได้คลิกใน menu และ menu เปิดอยู่
         }
-        
+    } else {
+        if (isClickInsideMenu && isPopupOpen) {
+            hidePopupWindow();  // ซ่อน popup-window ถ้าคลิกใน menu และ popup เปิดอยู่
+        }
+        if (isClickInsidePopup && isMenuOpen) {
+            hideMenuBox();      // ซ่อน menuBox ถ้าคลิกใน popup และ menu เปิดอยู่
+        }
     }
 }
 
