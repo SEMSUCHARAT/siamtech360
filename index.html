@@ -1,114 +1,2628 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIAMTECH 360°</title>
-    <!-- นำเข้าฟอนต์ Kanit จาก Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            text-align: center;
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Pannellum with Dual Mode Iframe</title>
+      <!-- นำเข้าฟอนต์ Kanit จาก Google Fonts -->
+      <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet">
+      <style>
+  
+            /* กำหนดขนาดของหน้าต่าง, ข้อความ, icon, ตัวเลข, ภาพ, video */
+     body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%; /* ปรับขนาดให้เต็มหน้าจอ */
+    font-family: 'Kanit', sans-serif; /* กำหนดฟอนต์เป็น Kanit */
+}
+
+    #panorama {
+        width: 100vw;
+        height: 100vh;
+    }
+
+    /* Tooltip Styling video iframe */
+    .custom-tooltip {
+        display: flex;
+        align-items: center; /* จัดแนวตรงกลางในแนวตั้ง */
+        justify-content: center; /* จัดแนวตรงกลางในแนวนอน */
+        background-color: transparent; /* ตั้งค่าพื้นหลังเป็นโปร่งใส */
+        color: white; /* สีข้อความ */
+        padding: 0; /* ไม่มี padding */
+        border: none; /* ไม่มีขอบ */
+        font-size: 20px; /* ขนาดฟอนต์ */
+        font-weight: normal; /* น้ำหนักฟอนต์ปกติ */
+        cursor: default; /* เปลี่ยนเคอร์เซอร์เมื่อชี้ */
+        white-space: nowrap; /* ป้องกันการตัดคำ */
+        box-shadow: none; /* ไม่มีเงา */
+        font-family: 'Kanit', sans-serif; /* กำหนดฟอนต์เป็น Kanit */
+        background-image: none !important;
+        background-size: 0 !important;
+    }
+
+    .custom-tooltip img {
+        width: 24px; /* เพิ่มขนาดไอคอน */
+        height: 24px; /* เพิ่มขนาดไอคอน */
+        margin-right: 5px;
+    }
+
+    /* กำหนดขนาดของไอคอน YouTube */
+    .youtube-icon {
+        width: 16px; /* ขนาดไอคอน YouTube */
+        height: 11px; /* ขนาดไอคอน YouTube */
+    }
+
+    /* Tooltip Label */
+    .tooltip-label {
+        position: absolute;
+        top: -50px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        padding: 3px 5px;
+        font-size: 20px;
+        border-radius: 3px;
+        text-align: center;
+        font-family: 'Kanit', sans-serif; /* กำหนดฟอนต์เป็น Kanit */
+    }
+
+    /* Video Overlay (Normal Mode) */
+    #videoOverlay {
+        position: fixed;
+        top: 150px; /* ตำแหน่งต่ำกว่า menuButton เล็กน้อย */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50%;
+        height: auto;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.8); /* เพิ่มพื้นหลังสีดำโปร่งใส */
+        z-index: 9999;
+    }
+
+    #videoOverlay iframe {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        border: none;
+        position: relative; /* เพิ่ม position relative เพื่อให้ปุ่มปิดอยู่ภายใน iframe */
+    }
+
+    #closeButton {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        width: 40px;
+        height: 40px;
+        background-color: rgb(235, 68, 68);
+        color: rgb(255, 255, 255);
+        border: 2px solid rgba(255, 0, 0, 0);
+        border-radius: 50%;
+        font-size: 32px;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0; /* ลบ padding */
+        z-index: 10000; /* เพิ่ม z-index เพื่อให้อยู่เหนือ iframe */
+    }
+
+    #closeButton::before {
+        content: '×'; /* กากบาท */
+        font-size: 40px;
+        font-weight: regular;
+    }
+
+    #closeButton:hover {
+        background-color: #ff0000;
+        color: #ffffff;
+    }
+
+    /* ปุ่ม Popup */
+    .popup-icon {
+        position: fixed; /* ใช้ fixed เพื่อให้อยู่เหนือ Pannellum */
+        top: 20px;
+        right: 30px; /* วางตำแหน่งข้างๆปุ่ม Fullscreen */
+        width: 64px;
+        height: 64px;
+        background-color: rgba(0, 0, 0, 0);
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease;
+    }
+
+    .popup-icon:hover {
+        background-color: rgba(0, 0, 0, 0.301); /* สีพื้นหลังที่เปลี่ยนเมื่อ hover */
+        transform: scale(1.1); /* ขยายขนาดขึ้นเล็กน้อย */
+    }
+
+    .popup-icon img {
+        width: 64px;
+        height: 64px;
+    }
+
+    /* Popup Window */
+    .popup-window {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 15%;
+    background-color: rgba(0, 0, 0, 0.9);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    z-index: 9999;
+}
+
+    .popup-window h2 {
+        color: white;
+        margin-bottom: 20px;
+    }
+
+    .popup-buttons-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .popup-button {
+        padding: 10px;
+        background-color: #333;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .popup-button:hover {
+        background-color: #4CAF50;
+    }
+
+    .highlighted {
+        background-color: #fa8e00; /* สีสำหรับการไฮไลท์ */
+    }
+
+    #closePopup {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        background-color: transparent; /* No background */
+        color: rgb(255, 255, 255);
+        border: 2px solid rgba(255, 0, 0, 0); /* Border instead of background */
+        border-radius: 50%;
+        font-size: 32px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #closePopup:hover {
+        color: rgb(255, 0, 0);
+        border-color: rgba(139, 0, 0, 0);
+    }
+
+    /* hotspot */
+    .custom-hotspot {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .custom-hotspot:hover {
+        background-color: rgba(0, 0, 0, 0.301); /* สีพื้นหลังที่เปลี่ยนเมื่อ hover */
+        transform: scale(1.1); /* ขยายขนาดขึ้นเล็กน้อย */
+    }
+
+    .custom-hotspot img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .custom-hotspot span {
+        color: white;
+        top: -50px;
+        left: 50%;
+        background-color: rgba(0, 0, 0, 0.7);
+        padding: 2px 5px;
+        border-radius: 3px;
+        margin-bottom: 5px;
+        font-size: 20px;
+        font-family: 'Kanit', sans-serif; /* กำหนดฟอนต์เป็น Kanit */
+        white-space: nowrap;
+    }
+
+    /* ปุ่มรูปภาพ */
+    #menuButton {
+        width: 320px; /* ปรับขนาดให้เหมาะสม */
+        cursor: pointer;
+        z-index: 10001; /* อยู่เหนือ pannellum */
+        position: fixed;
+        top: 20px;
+        left: 50%; /* กึ่งกลางแนวนอน */
+        transform: translateX(-50%); /* เลื่อนกลับครึ่งหนึ่งของความกว้าง */
+        justify-content: center;
+        align-items: center;
+        display: block; /* แสดงตลอดเวลา */
+    }
+
+    /* เมนูซ่อน */
+    .menuBox {
+        background: rgba(255, 255, 255, 0.527);
+        padding: 20px;
+        border-radius: 12px;
+        width: 300px;
+        text-align: center;
+        position: fixed;
+        top: 100px; /* ตำแหน่งต่ำกว่า menuButton เล็กน้อย */
+        left: 50%; /* กึ่งกลางแนวนอน */
+        transform: translateX(-50%); /* เลื่อนกลับครึ่งหนึ่งของความกว้าง */
+        font-weight: 700; /* ฟอนต์หนา */
+        display: none; /* ซ่อนเมนูโดยเริ่มต้น */
+        z-index: 10002; /* อยู่เหนือ pannellum */
+    }
+
+    .menuItem {
+        font-size: 24px;
+        margin: 10px 0;
+        color: black;
+        text-decoration: none;
+        display: block;
+        font-weight: 700; /* ฟอนต์หนา */
+    }
+
+    .menuItem:hover {
+        color: #ffb71b;
+    }
+
+    /* ปุ่มปิด */
+    #closeMenu {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        font-size: 25px;
+        cursor: pointer;
+        color: black;
+        font-weight: 500;
+    }
+
+    #closeMenu:hover {
+        color: red;
+    }
+
+    /* ปรับขนาดสำหรับหน้าจอขนาดเล็ก */
+    @media (max-width: 768px)  {
+        .custom-tooltip {
+            padding: 3px 8px; /* ลด Padding */
+            font-size: 16px; /* ลดขนาดฟอนต์ */
+            border-radius: 3px; /* ลดความโค้งมน */
         }
-        header {
-            background: #fff;
+
+        .custom-tooltip img {
+            width: 24px; /* เพิ่มขนาดไอคอนสำหรับมือถือ */
+            height: 24px; /* เพิ่มขนาดไอคอนสำหรับมือถือ */
+        }
+    }
+
+    /* ปรับขนาดสำหรับหน้าจอขนาดเล็กแนวนอน */
+    @media (min-width: 800px) and (max-width: 1000px)  {
+        .custom-tooltip {
+            padding: 3px 8px; /* ลด Padding */
+            font-size: 16px; /* ลดขนาดฟอนต์ */
+            border-radius: 3px; /* ลดความโค้งมน */
+        }
+
+        .custom-tooltip img {
+            width: 24px; /* เพิ่มขนาดไอคอนสำหรับมือถือ */
+            height: 24px; /* เพิ่มขนาดไอคอนสำหรับมือถือ */
+        }
+    }
+
+    @media (max-width: 768px)  {
+        .tooltip-label {
+            top: -40px;
+            left: 50%;
+            padding: 3px 8px; /* ลด Padding */
+            font-size: 16px; /* ลดขนาดฟอนต์ */
+            border-radius: 3px; /* ลดความโค้งมน */
+        }
+
+        #videoOverlay {
+            width: 80%;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            padding: 10px 20px;
-            border-bottom: 2px solid #ddd;
+            display: none; /* ซ่อน videoOverlay */
         }
-        .logo {
-            display: flex;
-            align-items: center;
+
+        #videoOverlay iframe {
+            width: 100%;
+            height: auto;
+            display: block;
         }
-        .logo img {
-            height: 40px;
-            margin-right: 10px;
+
+        #closeButton {
+            width: 20px;
+            height: 20px;
         }
-        .nav-links a {
-            text-decoration: none;
-            color: #000;
-            margin: 0 10px;
-            font-size: 14px;
-            font-family: 'Kanit', sans-serif; /* กำหนดฟอนต์เป็น Kanit */
+
+        #closeButton::before {
+            font-size: 20px;
         }
-        .cta {
-            background-color: #ffcc00;
-            color: #000;
-            padding: 5px 15px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            font-family: 'Kanit', sans-serif; /* กำหนดฟอนต์เป็น Kanit */
+
+        .popup-icon img {
+            width: 44px;
+            height: 44px;
         }
-        .hero {
-            background: #f0f0f0;
-            height: 80vh;
-            padding: 100px 20px;
+
+        .popup-icon {
+            top: 20px;
+            right: 20px;
+            width: 44px;
+            height: 44px;
         }
-        .hero h1 {
-            font-size: 48px;
-            margin: 0;
-            font-family: 'Kanit', sans-serif; /* กำหนดฟอนต์เป็น Kanit */
+
+        .popup-icon:hover {
+            background-color: rgba(0, 0, 0, 0.301); /* สีพื้นหลังที่เปลี่ยนเมื่อ hover */
+            transform: scale(1.1); /* ขยายขนาดขึ้นเล็กน้อย */
         }
-        .hero button {
-            margin-top: 20px;
-            padding: 10px 30px;
-            font-size: 18px;
-            background-color: #000;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            font-family: 'Kanit', sans-serif; /* กำหนดฟอนต์เป็น Kanit */
-        }
-        .footer {
-            margin-top: 40px;
+
+        .popup-window {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            border-radius: 10px;
             padding: 20px;
-            background: #fff;
-            border-top: 2px solid #ddd;
+            text-align: center;
+            z-index: 9999;
+            width: 60%;
+            max-width: 768px;
+
         }
-        .footer p {
-            margin: 5px 0;
+
+        .popup-buttons-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+        .popup-button {
+            font-size: 16px;
+            padding: 8px;
+            font-family: 'Kanit', sans-serif; /* กำหนดฟอนต์เป็น Kanit */
         }
-    </style>
-</head>
-<body>
-    <!-- Header Section -->
-    <header>
-        <div class="logo">
-            <img src="https://static.wixstatic.com/media/892c97_3a35de5f48ea4285b5470696fb7d0677~mv2.png" alt="SIAMTECH 360° Logo">
-        </div>
-        <div class="nav-links">
-            <a href="index.html">หน้าแรก</a>
-            <a href="about.html">เกี่ยวกับ</a>
-            <a href="360view">มุมมอง 360°</a>
-            <a href="https://siamtech.info/eEnrollment/index.jsp" class="cta">สมัครเลย</a>
-        </div>
-    </header>
 
-    <!-- Hero Section -->
-<section class="hero" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 55vh;">
-    <h1 style="font-size: 64px; line-height: 0.8; text-align: left; margin-left: -37%;">Welcome To<br></h1>
-    <h1 style="font-size: 128px; line-height: 0.8;">SIAMTECH 360°<br></h1>
-        
-    <button style="margin-top: 70px;" onclick="window.location.href='about.html'">START</button>
-</section>
+        .custom-hotspot span {
+            font-size: 16px;
+            font-family: 'Kanit', sans-serif; /* กำหนดฟอนต์เป็น Kanit */
+        }
 
-    <!-- Footer Section -->
-    <footer class="footer" style="font-family: 'Kanit', sans-serif; text-align: left;">
-        <div class="logo">
-            <img src="https://static.wixstatic.com/media/892c97_3a35de5f48ea4285b5470696fb7d0677~mv2.png" alt="SIAMTECH 360° Logo" style="height: 40px; margin-bottom: 10px;">
+        #closePopup {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 20px;
+        height: 20px;
+        background-color: transparent; /* No background */
+        color: rgb(255, 255, 255);
+        border: 2px solid rgba(255, 0, 0, 0); /* Border instead of background */
+        border-radius: 50%;
+        font-size: 22px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        #menuButton {
+            width: 220px;
+        }
+
+        .menuBox {
+            width: 150px;
+            top: 80px; /* ตำแหน่งต่ำกว่า menuButton เล็กน้อย */
+            left: 50%; /* กึ่งกลางแนวนอน */
+        }
+
+        .menuItem {
+            font-size: 16px;
+            font-weight: 700; /* ฟอนต์หนา */
+        }
+
+        #closeMenu {
+            font-size: 20px;
+        }
+    }
+    @media (min-width: 800px) and (max-width: 1000px)  {
+        .tooltip-label {
+            top: -40px;
+            left: 50%;
+            padding: 3px 8px; /* ลด Padding */
+            font-size: 16px; /* ลดขนาดฟอนต์ */
+            border-radius: 3px; /* ลดความโค้งมน */
+        }
+
+        #videoOverlay {
+            width: 50%;
+            position: fixed;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            display: none; /* ซ่อน videoOverlay */
+        }
+
+        #videoOverlay iframe {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        #closeButton {
+            width: 20px;
+            height: 20px;
+        }
+
+        #closeButton::before {
+            font-size: 20px;
+        }
+
+        .popup-icon img {
+            width: 44px;
+            height: 44px;
+        }
+
+        .popup-icon {
+            top: 20px;
+            right: 20px;
+            width: 44px;
+            height: 44px;
+        }
+
+        .popup-icon:hover {
+            background-color: rgba(0, 0, 0, 0.301); /* สีพื้นหลังที่เปลี่ยนเมื่อ hover */
+            transform: scale(1.1); /* ขยายขนาดขึ้นเล็กน้อย */
+        }
+
+        .popup-window {
+            display: none;
+            position: fixed;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            z-index: 9999;
+            width: 30%;
+            max-width: 768px;
+        }
+
+        .popup-buttons-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+        .popup-button {
+            font-size: 16px;
+            padding: 8px;
+            font-family: 'Kanit', sans-serif; /* กำหนดฟอนต์เป็น Kanit */
+        }
+
+        .custom-hotspot span {
+            font-size: 10px;
+            font-family: 'Kanit', sans-serif; /* กำหนดฟอนต์เป็น Kanit */
+        }
+
+        #closePopup {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 20px;
+        height: 20px;
+        background-color: transparent; /* No background */
+        color: rgb(255, 255, 255);
+        border: 2px solid rgba(255, 0, 0, 0); /* Border instead of background */
+        border-radius: 50%;
+        font-size: 22px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        #menuButton {
+            width: 220px;
+        }
+
+        .menuBox {
+            width: 180px;
+            top: 70px; /* ตำแหน่งต่ำกว่า menuButton เล็กน้อย */
+            left: 50%; /* กึ่งกลางแนวนอน */
+        }
+
+        .menuItem {
+            font-size: 16px;
+            font-weight: 700; /* ฟอนต์หนา */
+        }
+
+        #closeMenu {
+            font-size: 20px;
+        }
+    }
+      </style>
+  </head>
+  <body>
+    <div id="panorama"></div>
+    <!-- Video Overlay -->
+    <div id="videoOverlay" onclick="hideVideoOverlay()">
+        <button id="closeButton"></button>
+        <iframe id="videoIframe" src="" allowfullscreen></iframe>
+    </div>
+    <!-- ปุ่ม Popup -->
+    <button id="popupButton" class="popup-icon">
+        <img src="https://static.wixstatic.com/media/892c97_08385d54d1484f0b9cd7afc0ad17ae2f~mv2.png" alt="Popup Icon">
+    </button>
+    <!-- Popup Window -->
+    <div id="popupWindow" class="popup-window">
+        <button id="closePopup">&times;</button>
+        <h2>กดเพื่อเลือกชั้น</h2>
+        <div class="popup-buttons-container">
+            <button class="popup-button" data-target="fl1">ชั้น 1</button>
+            <button class="popup-button" data-target="fl4">ชั้น 4</button>
+            <button class="popup-button" data-target="fl5">ชั้น 5</button>
+            <button class="popup-button" data-target="fl9">ชั้น 9</button>
         </div>
-        <p>เราสร้างคนสู่โลกอนาคต</p>
-        <p>วิทยาลัยเทคโนโลยีสยาม (สยามเทค)</p>
-        <p>46/9 ถ.กรุงธนบุรี แขวงวัดท่าพระ เขตบางกอกใหญ่ กรุงเทพฯ 10600</p>
-        <p>โทร. 02-8640358</p>
-        <p>แฟกซ์. 02-412-9863</p>
+    </div>
+    <!-- ปุ่มรูปภาพ -->
+    <img id="menuButton" src="https://static.wixstatic.com/media/892c97_97353787c75048de86e483d3f0e69fc4~mv2.png" alt="เปิดเมนู">
 
-</footer>
-</body>
-</html>
+    <!-- เมนู -->
+        <div class="menuBox">
+            <div id="closeMenu">&#10006;</div>
+            <a href="https://www.siamtech360.com/" class="menuItem" target="_top">หน้าแรก</a>
+            <a href="https://www.siamtech360.com/about" class="menuItem" target="_top">เกี่ยวกับ</a>
+        </div>
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/pannellum/build/pannellum.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum/build/pannellum.css">
+<script>
+  
+  //ส่วนขอมูลของภาพ 360 องศาพร้อมการสร้างหน้าต่าง pannellum.................................................................................................
+  
+     //เริมต้น panellum
+  const viewer = pannellum.viewer('panorama', {
+      default: {
+          firstScene: "R1",
+          sceneFadeDuration: 500,
+          autoLoad: true,
+          autoRotate: -2,
+          autoRotateInactivityDelay: 10000,
+          compass: false,
+          showZoomCtrl: false,
+          mouseZoom: true,
+          showFullscreenCtrl: false, // เปิดใช้งานปุ่ม Fullscreen
+          showControls: false,
+          
+          },
+          scenes: {
+  
+                  //ชั้นแรก.............................................................................................................................
+                      // หน้าวิทลัย
+                      "R1": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_d12270e6dcbb45efb2fbbe9d1cb46495~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 2,
+                                  yaw: -23,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "จุดสแกนเข้าเรียน",
+                                      targetScene: "R2"
+                                  }
+                              },
+                              {
+                                  pitch: 5,
+                                  yaw: 42,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ลานน้ำพุหน้าเสาธง",
+                                      targetScene: "flag"
+                                  }
+                              },
+                          ]
+                      },
+                      // หน้าเสาธง 
+                      "flag": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_232703ddba40494faca726f86d0a8ac6~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: -3,
+                                  yaw: 55,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "หน้าวิทยาลัย",
+                                      targetScene: "R1",
+                                      yawTarget: -130 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              },
+                          ]
+                      },
+                      // จุดสแกนเข้าเรียน
+                      "R2": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_59e810566c654d55a1bf6412328715ee~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: 173.55,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "หน้าวิทยาลัย",
+                                      targetScene: "R1",
+                                      yawTarget: -178 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: -5,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ทางเดินที่ 1",
+                                      targetScene: "R3"
+                                  }
+                              },
+                          ]
+                      },  
+                      // ทางเดินที่ 1
+                      "R3": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_6fe8ee9133ca421683d2685489079665~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: 10,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ทางหน้าลิฟต์ชั้น 1",
+                                      targetScene: "fl1"
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: 170,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "จุดสแกนเข้าเรียน",
+                                      targetScene: "R2",
+                                      yawTarget: 180 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              },
+                          ]
+                      },
+                      // ทางหน้าลิฟต์ชั้น 1
+                      "fl1": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_5fa55a8777544fc0b49559d657de5a90~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: 10,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ทางเดินที่ 3",
+                                      targetScene: "R5"
+                                  }
+                              },
+                              {
+                                  pitch: 4,
+                                  yaw: 103.65,
+                                  type: "custom",
+                                      createTooltipFunc: hotspotWithPopup,
+                                      createTooltipArgs: {
+                                          label: "เลือกชั้น"
+                                      }
+                                  },
+                              {
+                                  pitch: 0,
+                                  yaw: -167,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ทางเดินที่ 1",
+                                      targetScene: "R3",
+                                      yawTarget: -170 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              }
+  
+                          ]
+                      },
+                      // ทางโค้ง
+                      "R5": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_3f5c0bb0951d43be952a12deff360b7b~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: -40,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ทางเดินที่ 4",
+                                      targetScene: "R6",
+                                      yawTarget: 55 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: 139,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ทางหน้าลิฟต์ชั้น 1",
+                                      targetScene: "fl1",
+                                      yawTarget: -170 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                      
+                                  }
+                              },
+                          ]
+                      },
+                      // ทางม้าลาย
+                      "R6": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_483d914a5fc741fd87edecd2ac1deb3e~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 5,
+                                  yaw: 55,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "อาคาร 10 ชั้น1",
+                                      targetScene: "B10"
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: -135,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ทางเดินที่ 3",
+                                      targetScene: "R5",
+                                      yawTarget: 130 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              },
+                          ]
+                      },
+                      // ตึก10
+                      "B10": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_5a44ba1af73e4291ae150a86cdd018a1~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: -44,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ev-1",
+                                      targetScene: "ev-1"
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: 20,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "หน้าโรงรถ",
+                                      targetScene: "B10-2"
+                                  }
+                              },
+                              {
+                                  pitch: -2,
+                                  yaw: 138,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ทางเดินที่ 4",
+                                      targetScene: "R6",
+                                      yawTarget: -125 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              },
+                          ]
+                      }, 
+                      // ev-1
+                      "ev-1": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_b101216ba78d4904b90c81ca35ac4c57~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: -20,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ห้อง ev จุดที่2",
+                                      targetScene: "ev-2",
+                                      yawTarget: 30 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              },
+                              {
+                                  pitch: 5,
+                                  yaw: -178,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ลานตึก10",
+                                      targetScene: "B10",
+                                      yawTarget: -44 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: 17,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ห้อง ev จุดที่3",
+                                      targetScene: "ev-3",
+                                      yawTarget: -34 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              },
+                          ]
+                      },
+                      // ev-2
+                      "ev-2": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_f97c84d9276645c8a29bcbbbb9d87606~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: -175,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ห้อง ev จุดที่3",
+                                      targetScene: "ev-3"
+                                  }
+                              },
+                              {
+                                  pitch: -4,
+                                  yaw: 115,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ห้อง ev จุดที่4",
+                                      targetScene: "ev-4"
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: -110,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ห้อง ev จุดที่1",
+                                      targetScene: "ev-1",
+                                      yawTarget: 160 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              },
+                          ]
+                      },
+                      // ev-3
+                      "ev-3": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_b5657e2335544a8faa246fb2cb5aeb86~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: -3,
+                                  yaw: -100,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ห้อง ev จุดที่4",
+                                      targetScene: "ev-4"
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: -167,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ห้อง ev จุดที่2",
+                                      targetScene: "ev-2",
+                                      yawTarget: -5 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              },
+                              {
+                                  pitch: 2,
+                                  yaw: 100,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ห้อง ev จุดที่1",
+                                      targetScene: "ev-1",
+                                      yawTarget: 160 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              },
+                          ]
+                      },     
+                      // ev-4
+                      "ev-4": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_e394472b6b224b238eae6ba1299abd00~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: 165,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ห้อง ev จุดที่3",
+                                      targetScene: "ev-3",
+                                      yawTarget: 80 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: -140,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ห้อง ev จุดที่2",
+                                      targetScene: "ev-2",
+                                      yawTarget: -65 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              },
+                          ]
+                      },   
+                      // ตึก10-2
+                      "B10-2": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_737e75eafcb6478dbd044ad51b55f410~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: -7,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "garage",
+                                      targetScene: "car-1"
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: -160,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ลานตึก10",
+                                      targetScene: "B10",
+                                      yawTarget: 20 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              },
+                          ]
+                      },
+                      // car-1
+                      "car-1": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_a8cc3ef230d8407f9202106bd5cae562~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: -90,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "garage-2",
+                                      targetScene: "car-2"
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: 40,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "garage-3",
+                                      targetScene: "car-3"
+                                  }
+                              },
+                              {
+                                  pitch: 5,
+                                  yaw: 133,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "หน้าโรงรถ",
+                                      targetScene: "B10-2",
+                                      yawTarget: 173 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              },
+                          ]
+                      },
+                      // car-2
+                      "car-2": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_cd0b07f8b9e344ae9ec141aac5a909d5~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: 0,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "garage-1",
+                                      targetScene: "car-1",
+                                      yawTarget: 90 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              },
+                          ]
+                      },
+                      // car-3
+                      "car-3": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_1d505374ef2141ce841098140fb6a1a1~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: -140,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "garage-1",
+                                      targetScene: "car-1",
+                                      yawTarget: -140 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: 35,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "garage-4",
+                                      targetScene: "car-4"
+                                  }
+                              },
+                          ]
+                      },
+                      // car-4
+                      "car-4": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_175b70539196490c83e3f98089e19fde~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: -25,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "garage-3",
+                                      targetScene: "car-3",
+                                      yawTarget: -145 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              },
+                          ]
+                      },
+                      //.....................................................................................................................................ชั้น 4
+                          "fl4": {
+                              type: "equirectangular",
+                              panorama: 'https://static.wixstatic.com/media/892c97_d32085d05b814ccd99a052edcf4c42a0~mv2.jpg',//ชั้น4
+                              yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                              hotSpots: [
+                                  {
+                                      "pitch": 0,
+                                      "yaw": 1,
+                                      "type": "custom",
+                                      createTooltipFunc: hotspotWithLabel,
+                                      createTooltipArgs: {
+                                          label: "Multimedia Lab",
+                                          targetScene: "sub1"
+                                      }
+                                  },
+                                  {
+                                  pitch: 0,
+                                  yaw: 53,
+                                  type: "custom", // ใช้ custom เพื่อรองรับ createTooltipFunc
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "Coding Room",
+                                      targetScene: "sub2"
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: 145,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "โถงทางเดิน 1",
+                                      targetScene: "main1"
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: 173.55,
+                                  type: "custom",
+                                      createTooltipFunc: hotspotWithPopup,
+                                      createTooltipArgs: {
+                                          label: "เลือกชั้น"
+                                      }
+                                  },
+                              {
+                                  pitch: 7,
+                                  yaw: -74.55,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithVideo,
+                                  createTooltipArgs: {
+                                      videoUrl: "https://www.youtube.com/embed/FU1aPHhc7uI",
+                                      text: "คลิกเพื่อชมภาพยนต์สั้นที่ได้รับรางวัลระดับประเทศ"
+                                  }
+                              }
+                          ]
+                      },
+                      //407
+                  "sub1": {
+                  type: "equirectangular",
+                  panorama: "https://static.wixstatic.com/media/892c97_0e2d101dd5b5490a86bb60c334671ba6~mv2.jpg",
+                  yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                  hotSpots: [
+                      {
+                          pitch: -5,
+                          yaw: -120,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "กลับไปยังโถงหลักชั้น 4",
+                              targetScene: "fl4",
+                              yawTarget: 1 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                          }
+                      }
+                  ]
+                  },
+                      // Coding Room
+                      "sub2": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_23e8566781e44132ac52a50b6d2f410d~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: 67,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "โถงหลักชั้น 4",
+                                      targetScene: "fl4",
+                                      yawTarget: 53 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              }
+                          ]
+                      },
+                      // โถงทางเดิน 1
+                      "main1": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_4c26ff4187074b17b44f84ef2935a8b2~mv2.jpg",
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: 156,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "Multimedia Lab",
+                                      targetScene: "sub1-1"
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: 15,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "โถงทางเดิน 2",
+                                      targetScene: "main2"
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: 146,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "โถงหลักชั้น 4",
+                                      targetScene: "fl4",
+                                      yawTarget: 145 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              },
+                          ]
+                      },
+                          // 407
+                      "sub1-1": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_0e2d101dd5b5490a86bb60c334671ba6~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: -5,
+                                  yaw: -120,
+                                  type: "custom", // ใช้ custom สำหรับ Tooltip
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "โถงทางเดินที่ 1",
+                                      targetScene: "main1",
+                                      yawTarget: 156 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              }
+                          ]
+                      },
+                      // โถงทางเดิน 2
+                      "main2": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_7a1f2d3540c34642b6eeb717b4307d06~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: 78,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ห้อง 404",
+                                      targetScene: "sub3"
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: 109,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ห้อง 405",
+                                      targetScene: "sub4"
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: -150,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ห้อง 410",
+                                      targetScene: "sub5"
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: 5,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "โถงทางเดินที่ 3",
+                                      targetScene: "main3"
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: 177,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "โถงทางเดินที่ 1",
+                                      targetScene: "main1",
+                                      yawTarget: -165 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              }
+                          ]
+                      },
+                      // ห้อง 404
+                      "sub3": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_f2ad5d2559fd4e90bac121d30b0ef563~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: -17,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "โถงทางเดิน 2",
+                                      targetScene: "main2",
+                                      yawTarget: 78 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              }
+                          ]
+                      },
+                      // ห้อง 405
+                      "sub4": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_4c1f6869ae394d42a4c36945080ce511~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: 20,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "โถงทางเดิน 2",
+                                      targetScene: "main2",
+                                      yawTarget: 109 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              }
+                          ]
+                      },
+                      // ห้อง 410
+                      "sub5": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_47c1a06c9152488396b29b8feb33f82c~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: -59,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "โถงทางเดิน 2",
+                                      targetScene: "main2",
+                                      yawTarget: -150 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              }
+                          ]
+                      },
+                      // โถงทางเดิน 3
+                      "main3": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_48e5008e42e945a0802e887ea772c2a5~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: 52,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ห้อง 401",
+                                      targetScene: "sub6"
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: 133,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ห้อง 402",
+                                      targetScene: "sub7"
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: 165,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ห้อง 403",
+                                      targetScene: "sub8"
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: -19,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ห้อง 412",
+                                      targetScene: "sub9"
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: -171,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "โถงทางเดิน 2",
+                                      targetScene: "main2",
+                                      yawTarget: -175 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              }
+                          ]
+                      },
+                          // 401
+                      "sub6": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_fe9bae7464d2431aa1f376c7487694a4~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: -19,
+                                  type: "custom", // ใช้ custom สำหรับ Tooltip
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "โถงทางเดินที่ 3",
+                                      targetScene: "main3",
+                                      yawTarget: 52 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              }
+                          ]
+                      },
+                      // 402
+                      "sub7": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_04904974ccf249b598e6ddd4784ae572~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: -17,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "โถงทางเดินที่ 3",
+                                      targetScene: "main3",
+                                      yawTarget: 133 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              }
+                          ]
+                      },
+                      // 403
+                      "sub8": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_765803a5b2cb46b8acf05ee480bf99e2~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: -20,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "โถงทางเดินที่ 3",
+                                      targetScene: "main3",
+                                      yawTarget: 165 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              }
+                          ]
+                      },
+                      //412
+                      "sub9": {
+                            type: "equirectangular",
+                            panorama: "https://static.wixstatic.com/media/892c97_bf56fbb22eec4643a45c2e97703dd54d~mv2.jpg",
+                            yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                            hotSpots: [
+                                  {
+                                  pitch: 0,
+                                  yaw: 52,
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "โถงทางเดินที่ 3",
+                                      targetScene: "main3",
+                                      yawTarget: -19 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              }
+                          ]
+                          },
+  
+                      // ชั้น 5.....................................................................................................................................
+                      "fl5": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_815551f3fbe24a1aa20cd15f1fa21ff3~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: 73,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "Photo Room",
+                                      targetScene: "sub10"
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: 5,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "ศูนย์ I'm Digital",
+                                      targetScene: "main4"
+                                  }
+                              },
+                              {
+                                  pitch: 3,
+                                  yaw: -178.55,
+                                  type: "custom",
+                                      createTooltipFunc: hotspotWithPopup,
+                                      createTooltipArgs: {
+                                          label: "เลือกชั้น"
+                                      }
+                                  }
+                          ]
+                      },
+                      // Photo Room
+                      "sub10": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_d3138a31f095487bb22da2335c24de5b~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: -37,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "โถงหลักชั้น 5",
+                                      targetScene: "fl5",
+                                      yawTarget: 73 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              }
+                          ]
+                      },
+                      // I'm Digital Center
+                      "main4": {
+                          type: "equirectangular",
+                          panorama: "https://static.wixstatic.com/media/892c97_389f80b7d5d349c19f9dcb3190a64e5a~mv2.jpg",
+                          yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                          hotSpots: [
+                              {
+                                  pitch: 0,
+                                  yaw: 180,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "โถงหลักชั้น 5",
+                                      targetScene: "fl5",
+                                      yawTarget: -175 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                                  }
+                              },
+                              {
+                                  pitch: 0,
+                                  yaw: -98,
+                                  type: "custom",
+                                  createTooltipFunc: hotspotWithLabel,
+                                  createTooltipArgs: {
+                                      label: "โถงทางเดินที่ 1",
+                                      targetScene: "main5"
+                                  }
+                              },
+                          ]
+                      },
+                      // โถงทางเดิน 1
+                      "main5": {
+                      type: "equirectangular",
+                      panorama: "https://static.wixstatic.com/media/892c97_3ed437dcaeab4310b704c52139bdecdb~mv2.jpg",
+                      yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                      hotSpots: [
+                      {
+                          pitch: -3,
+                          yaw: -90,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 2",
+                              targetScene: "main6"
+                          }
+                      },
+                      {
+                          pitch: 0,
+                          yaw: 175,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "ศูนย์ I'm Digital",
+                              targetScene: "main4",
+                              yawTarget: 82 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                          }
+                      },
+                      {
+                          pitch: 0,
+                          yaw: 133,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "Conference Room",
+                              targetScene: "sub11"
+                          }
+                      },
+                      {
+                          pitch: 0,
+                          yaw: 0,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "Robots Room",
+                              targetScene: "sub12"
+                          }
+                      }
+                  ]
+              },
+              // ห้องประชุม
+              "sub11": {
+                  type: "equirectangular",
+                  panorama: "https://static.wixstatic.com/media/892c97_d2b09def397d4764a6ac4e0699dc7b24~mv2.jpg",
+                  yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                  hotSpots: [
+                      {
+                          pitch: 0,
+                          yaw: -160,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 1",
+                              targetScene: "main5",
+                              yawTarget: 133 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                          }
+                      }
+                  ]
+              },
+              // ห้อง Robots
+              "sub12": {
+                  type: "equirectangular",
+                  panorama: "https://static.wixstatic.com/media/892c97_fe83e0a1bbf44ccdacb97ab653946c48~mv2.jpg",
+                  yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                  hotSpots: [
+                      {
+                          pitch: 0,
+                          yaw: -179,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 1",
+                              targetScene: "main5",
+                              yawTarget: 180 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                          }
+                      },
+                      {
+                          pitch: 0,
+                          yaw: -105,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "กลางห้อง",
+                              targetScene: "sub12-1"
+                          }
+                      }
+                  ]
+              },
+              // กลางห้อง Robots
+              "sub12-1": {
+                  type: "equirectangular",
+                  panorama: "https://static.wixstatic.com/media/892c97_b4fb893eb1d24e559737b54dbba82899~mv2.jpg",
+                  yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                  hotSpots: [
+                      {
+                          pitch: 0,
+                          yaw: 110,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "หน้าห้อง",
+                              targetScene: "sub12",
+                              yawTarget: 75 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                          }
+                      }
+                  ]
+              },
+              //โถง2
+              "main6": {
+                  type: "equirectangular",
+                  panorama: "https://static.wixstatic.com/media/892c97_171c999921aa45dc94ca71047b33541a~mv2.jpg", 
+                  yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                  hotSpots: [
+                      {
+                          pitch: 0,
+                          yaw: 10,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 3",
+                              targetScene: "main7"
+                          }
+                      },
+                      {
+                          pitch: 0,
+                          yaw: 170,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 1",
+                              targetScene: "main5",
+                              yawTarget: 90 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                          }
+                      }
+                  ]
+              },
+              //โถง3
+              "main7": {
+                  type: "equirectangular",
+                  panorama: "https://static.wixstatic.com/media/892c97_544d6ab050f042dc9432c26ba171fb9f~mv2.jpg", 
+                  yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                  hotSpots: [
+                      {
+                          pitch: 0,
+                          yaw: -75,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 4",
+                              targetScene: "main8"
+                          }
+                      },
+                      {
+                          pitch: 0,
+                          yaw: 175,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 2",
+                              targetScene: "main6",
+                              yawTarget: -170 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                          }
+                      }
+                  ]
+              },
+  
+              //โถง4
+              "main8": {
+                  type: "equirectangular",
+                  panorama: "https://static.wixstatic.com/media/892c97_4ac32b9be1ae4dc3bd50e9266efb89c6~mv2.jpg", 
+                  yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                  hotSpots: [
+                      {
+                          pitch: 0,
+                          yaw: -33,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 5",
+                              targetScene: "main9"
+                          }
+                      },
+                      {
+                          pitch: 0,
+                          yaw: 65,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 3",
+                              targetScene: "main7",
+                              yawTarget: 105 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                          }
+                      },
+                      {
+                          pitch: 0,
+                          yaw: -16,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "Alibaba Room",
+                              targetScene: "sub13"
+                          }
+                      }
+                  ]
+              },
+              //ห้องอาลีบาบา
+              "sub13": {
+                  type: "equirectangular",
+                  panorama: "https://static.wixstatic.com/media/892c97_8d0975db88514654914f5600b2726d56~mv2.jpg",
+                  yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                  hotSpots: [
+                      {
+                          pitch: 0,
+                          yaw: 83,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 4",
+                              targetScene: "main8",
+                              yawTarget: -16 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                          }
+                      }
+                  ]
+              },
+              //โถง5
+              "main9": {
+                  type: "equirectangular",
+                  panorama: "https://static.wixstatic.com/media/892c97_230deeea1dad40529b9d43cbee18afe6~mv2.jpg", 
+                  yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                  hotSpots: [
+                      {
+                          pitch: -5,
+                          yaw: -100,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 6",
+                              targetScene: "main10"
+                          }
+                      },
+                      {
+                          pitch: -2,
+                          yaw: 163,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 4",
+                              targetScene: "main8",
+                              yawTarget: 157 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                          }
+                      },
+                      {
+                          pitch: 0,
+                          yaw: -43,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "Streaming Room",
+                              targetScene: "sub14"
+                          }
+                      }
+                  ]
+              },
+              //ห้องไมโครซอฟต์
+              "sub14": {
+                  type: "equirectangular",
+                  panorama: "https://static.wixstatic.com/media/892c97_dede3291e1064428a9f8beb2c3131635~mv2.jpg",
+                  yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                  hotSpots: [
+                      {
+                          pitch: 0,
+                          yaw: -60,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 5",
+                              targetScene: "main9",
+                              yawTarget: -43 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                          }
+                      }
+                  ]
+              },
+              //โถง6
+              "main10": {
+                  type: "equirectangular",
+                  panorama: "https://static.wixstatic.com/media/892c97_f44fa70ecaf9495ea59f71a46380a911~mv2.jpg", 
+                  yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                  hotSpots: [
+                      {
+                          pitch: 0,
+                          yaw: -55,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 7",
+                              targetScene: "main11"
+                          }
+                      },
+                      {
+                          pitch: -5,
+                          yaw: 180,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 5",
+                              targetScene: "main9",
+                              yawTarget: 80 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                          }
+                      },
+                      {
+                          pitch: 0,
+                          yaw: 50,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "Mechanical Room",
+                              targetScene: "sub15"
+                          }
+                      }
+                  ]
+              },
+              //mechanical
+              "sub15": {
+                  type: "equirectangular",
+                  panorama: "https://static.wixstatic.com/media/892c97_07fb2cb055c24a169e6168c8be8b3633~mv2.jpg",
+                  yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                  hotSpots: [
+                      {
+                          pitch: 0,
+                          yaw: -70,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 6",
+                              targetScene: "main10",
+                              yawTarget: 50 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                          }
+                      }
+                  ]
+              },
+              //โถง7
+              "main11": {
+                  type: "equirectangular",
+                  panorama: "https://static.wixstatic.com/media/892c97_72422db84e7c40cd852f9c52324c660c~mv2.jpg", 
+                  yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                  hotSpots: [
+                      {
+                          pitch: -20,
+                          yaw: 95,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 6",
+                              targetScene: "main10",
+                              yawTarget: 125 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                          }
+                      },
+                      {
+                          pitch: 0,
+                          yaw: -11,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "Studio 1",
+                              targetScene: "sub16"
+                          }
+                      },
+                      {
+                          pitch: 0,
+                          yaw: -3,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "Studio 2",
+                              targetScene: "sub17"
+                          }
+                      }
+                  ]
+              },
+              //ห้องสตู 1
+              "sub16": {
+                  type: "equirectangular",
+                  panorama: "https://static.wixstatic.com/media/892c97_9493713086da4eb38e0e2c855cf7d181~mv2.jpg", 
+                  yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                  hotSpots: [
+                      {
+                          pitch: 0,
+                          yaw: -177,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 7",
+                              targetScene: "main11",
+                              yawTarget: -11 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                          }
+                      }
+                  ]
+              },
+              //ห้องสตู 2
+              "sub17": {
+                  type: "equirectangular",
+                  panorama: "https://static.wixstatic.com/media/892c97_280494b66fcf4180b6e9316d0068b47c~mv2.jpg", 
+                  yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                  hotSpots: [
+                      {
+                          pitch: 0,
+                          yaw: -176,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 7",
+                              targetScene: "main11",
+                              yawTarget: -3 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                          }
+                      }
+                  ]
+              },
+              //.......................................................................................ชั้น 9
+              "fl9": {
+                  type: "equirectangular",
+                  panorama: "https://static.wixstatic.com/media/892c97_aee3c9760f5a433aaee605051453ec05~mv2.jpg",
+                  yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                  hotSpots: [
+                      {
+                          pitch: 0,
+                          yaw: 75,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 1",
+                              targetScene: "main12"
+                          }
+                      },
+                      {
+                          pitch: 2.5,
+                          yaw: 179,
+                          type: "custom",
+                                      createTooltipFunc: hotspotWithPopup,
+                                      createTooltipArgs: {
+                                          label: "เลือกชั้น"
+                                      }
+                                  }
+                  ]
+              },
+              //โถง1
+              "main12": {
+                  type: "equirectangular",
+                  panorama: "https://static.wixstatic.com/media/892c97_85a2c262b31c4bcda9927ff71d719f6c~mv2.jpg",
+                  yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                  hotSpots: [
+                      {
+                          pitch: 0,
+                          yaw: -50,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "ห้อง 904",
+                              targetScene: "sub18"
+                          }
+                      },
+                      {
+                          pitch: 1,
+                          yaw: 78,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "ห้อง 905",
+                              targetScene: "sub19",
+                              yawTarget: -90 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                          }
+                      },
+                      {
+                          pitch: 0,
+                          yaw: 170,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงหลักชั้น 9",
+                              targetScene: "fl9",
+                              yawTarget: -105 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                          }
+                      }
+                  ]
+              },
+              //904
+              "sub18": {
+                  type: "equirectangular",
+                  panorama: "https://static.wixstatic.com/media/892c97_72c3d5b07b6b4efc8157837316bc3d5c~mv2.jpg",
+                  yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                  hotSpots: [  
+                      {
+                          pitch: 0,
+                          yaw: 84,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 1",
+                              targetScene: "main12",
+                              yawTarget: -50 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                          }
+                      }
+                  ]
+              },
+              //905
+              "sub19": {
+                  type: "equirectangular",
+                  panorama: "https://static.wixstatic.com/media/892c97_21af5c512f574f24a743a1fdea3cf513~mv2.jpg", 
+                  yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                  hotSpots: [
+                      {
+                          pitch: 0,
+                          yaw: 85,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "โถงทางเดินที่ 1",
+                              targetScene: "main12",
+                              yawTarget: 78 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                          }
+                      },
+                      {
+                          pitch: 0,
+                          yaw: 177,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "กลางห้อง",
+                              targetScene: "sub19-1"
+                          }
+                      }
+                  ]
+              },
+              "sub19-1": {
+                  type: "equirectangular",
+                  panorama: "https://static.wixstatic.com/media/892c97_c5a058b5c5fc4a9a8e7e87a43b1988b3~mv2.jpg",
+                  yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                  hotSpots: [
+                      {
+                          pitch: 0,
+                          yaw: 180,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "หน้าห้อง",
+                              targetScene: "sub19",
+                              yawTarget: 0 // กำหนด yawTarget สำหรับการเปลี่ยน scene
+                          }
+                      },
+                      {
+                          pitch: 0,
+                          yaw: -5,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "หลังห้อง",
+                              targetScene: "sub19-2"
+                          }
+                      }
+                  ]
+              },
+              "sub19-2": {
+                  type: "equirectangular",
+                  panorama: "https://static.wixstatic.com/media/892c97_a7073d952c654b2d8b669bc09b84669b~mv2.jpg",
+                  yaw: 0, // กำหนดค่า yaw ให้หันไปทางทิศเหนือ
+                  hotSpots: [
+                      {
+                          pitch: -18,
+                          yaw: 180,
+                          type: "custom",
+                          createTooltipFunc: hotspotWithLabel,
+                          createTooltipArgs: {
+                              label: "กลางห้อง",
+                              targetScene: "sub19-1",
+                              yawTarget: 180 // กำหนด yawTarget สำหรับการเปลี่ยน scene เป็น 90 องศา
+                          }},
+                      ]        
+                  },
+                  }
+                      
+                  });
+      
+///////////////////////////////////////     ส่วนของ functions      ////////////////////////////////////////////////////////////////////////////////////////////
+      
+// สร้าง hotspot แสดงวิดีโอพร้อมข้อควม
+  
+      function hotspotWithVideo(hotSpotDiv, args) {
+      hotSpotDiv.classList.add('custom-tooltip');
+  
+      // สร้างไอคอน YouTube
+      const icon = document.createElement('img');
+      icon.src = "https://upload.wikimedia.org/wikipedia/commons/4/42/YouTube_icon_%282013-2017%29.png";
+      icon.alt = "YouTube Icon";
+      icon.style.width = '16px'; // เพิ่มขนาดไอคอน
+      icon.style.height = '11px'; // เพิ่มขนาดไอคอน
+      icon.classList.add('youtube-icon'); // เพิ่มคลาสเฉพาะสำหรับไอคอน YouTube
+  
+      // เพิ่มข้อความสำหรับ Hotspot (ตรวจสอบว่ามีข้อความหรือไม่)
+      const text = document.createElement('span');
+      text.innerText = args.text || ""; // ถ้า args.text เป็น undefined จะไม่แสดงข้อความ
+  
+      // เพิ่มข้อความบอกตำแหน่ง (ตรวจสอบว่ามี label หรือไม่)
+      const label = document.createElement('div');
+      label.classList.add('tooltip-label');
+      label.innerText = args.label || ""; // ถ้า args.label เป็น undefined จะไม่แสดงข้อความ
+  
+      // เพิ่มไอคอน, ข้อความ และ Label ใน Hotspot
+      hotSpotDiv.appendChild(label); // ข้อความบอกตำแหน่ง
+      hotSpotDiv.appendChild(icon); // ไอคอน
+      hotSpotDiv.appendChild(text); // ข้อความหลัก
+  
+      // คลิกเพื่อแสดงวิดีโอ
+      hotSpotDiv.onclick = function () {
+          handleVideoDisplay(args.videoUrl);
+      };
+      }
+
+      // Close Overlay in Normal Mode
+      document.getElementById('closeButton').onclick = function () {
+      const overlay = document.getElementById('videoOverlay');
+      const iframe = document.getElementById('videoIframe');
+      iframe.src = ''; // Clear iframe source
+      overlay.style.display = 'none';
+      startAutoPan();  // เริ่มการแพนใหม่เมื่อปิดวิดีโอ
+      }
+       // ตัวอย่างฟังก์ชันสำหรับแสดงวิดีโอ
+       function handleVideoDisplay(videoUrl) {
+          const overlay = document.getElementById('videoOverlay');
+          const iframe = document.getElementById('videoIframe');
+  
+          iframe.src = `${videoUrl}?autoplay=1`;
+          overlay.style.display = 'flex';
+      }
+
+
+
+  
+
+////////////////////////////////สร้าง hotspot พร้อมข้อควมแสดงสถานที่////////////////////////////////////////////////////////////////////////
+  
+// Function to create a hotspot with a label that is always displayed
+function hotspotWithLabel(hotSpotDiv, args) {
+    hotSpotDiv.classList.add('custom-tooltip');
+    
+    // สร้างสัญลักษณ์ hotspot
+    const icon = document.createElement('img');
+    icon.src = "https://static.wixstatic.com/media/892c97_ad6f2366ea064276820dc85cc2814907~mv2.png"; // ใส่ URL ของไอคอนที่คุณต้องการใช้
+    icon.alt = "Hotspot Icon";
+    icon.style.width = '40px'; // เพิ่มขนาดไอคอน
+    icon.style.height = '40px'; // เพิ่มขนาดไอคอน
+    hotSpotDiv.appendChild(icon);
+
+    // เพิ่มขนาดไอคอนสำหรับมือถือ
+    if (window.innerWidth <= 768)  {
+        icon.style.width = '30px';
+        icon.style.height = '30px';
+    }
+    if (window.innerWidth >= 800 && window.innerWidth <= 1080) {
+    icon.style.width = '30px';
+    icon.style.height = '30px';
+}
+    // สร้างข้อความ tooltip
+    const span = document.createElement('span');
+    span.classList.add('tooltip-label');
+    span.innerHTML = args.label;
+    hotSpotDiv.appendChild(span);
+
+    // แสดงข้อความตลอดเวลา
+    span.style.display = 'block';
+
+    // จัดการการคลิกเพื่อเปลี่ยน scene
+    hotSpotDiv.onclick = function() {
+        viewer.loadScene(args.targetScene, null, args.yawTarget); // เพิ่ม args.yawTarget สำหรับการเปลี่ยน scene
+    };
+}
+    
+  
+  //สร้าง hotspot ที่มี popup window พร้อมการแพนหน้าจอ...............................................................................................................
+  
+ // Function to create a hotspot that shows the pop-up window
+ function hotspotWithPopup(hotSpotDiv, args) {
+      hotSpotDiv.classList.add('custom-hotspot');
+      hotSpotDiv.innerHTML = `
+          <span>${args.label}</span>
+          <img src="https://static.wixstatic.com/media/892c97_08385d54d1484f0b9cd7afc0ad17ae2f~mv2.png" alt="Icon">`;
+      hotSpotDiv.onclick = function () {
+        togglePopupWindow();
+      };
+      }
+  
+      // Function to show the pop-up window
+  function showPopupWindow() {
+      const popupWindow = document.getElementById('popupWindow');
+      const panorama = document.getElementById('panorama');
+      panorama.appendChild(popupWindow); // ย้าย popup-window ไปยัง panorama
+      popupWindow.style.display = 'block'; // แสดง popup-window
+      stopAutoPan(); // หยุดการแพน
+      highlightCurrentButton(viewer.getScene()); // ไฮไลต์ปุ่ม
+  }
+  
+  // Function to hide the pop-up window
+  function hidePopupWindow() {
+      const popupWindow = document.getElementById('popupWindow');
+      popupWindow.style.display = 'none'; // ซ่อน popup-window
+      document.body.appendChild(popupWindow); // ย้าย popup-window กลับไปที่ body
+      startAutoPan(); // เริ่มการแพน
+  }
+
+  // Function to toggle the popup window
+  function togglePopupWindow() {
+    console.log('Toggle popup window called');
+      const popupWindow = document.getElementById('popupWindow');
+      if (popupWindow.style.display === 'block') {
+          hidePopupWindow();
+      } else {
+          showPopupWindow();
+      }
+  }
+
+   // Add event listener to popup button
+   document.getElementById('popupButton').addEventListener('click', togglePopupWindow);
+  // Add event listener to close button
+  document.getElementById('closePopup').addEventListener('click', hidePopupWindow);
+  
+  
+  // Add event listeners for popup buttons
+  document.querySelectorAll('.popup-button').forEach(button => {
+      button.addEventListener('click', () => {
+          const targetScene = button.getAttribute('data-target');
+          viewer.loadScene(targetScene); // โหลด Scene ตามปุ่มที่กด
+          hidePopupWindow(); // ซ่อน popup-window
+          resetInactivityTimeout(); // รีเซ็ต inactivity timer
+      });
+  });
+  
+  // Function to highlight the current button
+  function highlightCurrentButton(scene) {
+      document.querySelectorAll('.popup-button').forEach(button => {
+          button.classList.remove('highlighted'); // ลบคลาส 'highlighted' จากทุกปุ่ม
+          if (button.getAttribute('data-target') === scene) {
+              button.classList.add('highlighted'); // เพิ่มคลาส 'highlighted' ให้ปุ่มที่ตรงกับ Scene ปัจจุบัน
+          }
+      });
+  }
+  // Add event listener for scene change
+  viewer.on('scenechange', () => {
+      highlightCurrentButton(viewer.getScene());
+  });
+  
+//แพนหน้าจออัตโนมัติ.......................................................................................................................
+  // Function to start auto panning
+  function startAutoPan() {
+      viewer.startAutoRotate(-2);  // เริ่มการแพนด้วยความเร็ว -2
+  }
+  
+  // Function to stop auto panning
+  function stopAutoPan() {
+      viewer.stopAutoRotate();  // หยุดการแพน
+  }
+  
+  // Start auto panning after 10 seconds of inactivity
+  let inactivityTimeout;
+  document.addEventListener('mousemove', resetInactivityTimeout);
+  document.addEventListener('keydown', resetInactivityTimeout);
+  document.addEventListener('click', resetInactivityTimeout);
+  
+  function resetInactivityTimeout() {
+      clearTimeout(inactivityTimeout);
+      stopAutoPan();
+      inactivityTimeout = setTimeout(startAutoPan, 10000);  // เริ่มการแพนหลังจากไม่มีการแอคชั่นใดๆ 10 วินาที
+  }
+  
+  // Initial call to start auto panning after 10 seconds
+  resetInactivityTimeout();
+  
+  // Start auto panning immediately for the first scene
+  viewer.on('load', function() {
+      if (viewer.getScene() === 'R1') {
+          startAutoPan();
+      }
+      
+  });
+  
+  //ปุ่มเลือกชั้นแบบแสดงตลอด...............................................................................................................
+  
+  function showPopupWindow() {
+      const popupWindow = document.getElementById('popupWindow');
+      const panoramaContainer = document.getElementById('panorama');
+  
+      // ย้าย popup-window ไปยัง panorama ใน Fullscreen
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
+          panoramaContainer.appendChild(popupWindow);
+      } else {
+          document.body.appendChild(popupWindow);
+      }
+  
+      popupWindow.style.display = 'block'; // แสดง popup-window
+  }
+  // Function to toggle the popup window
+function togglePopupWindow() {
+    const popupWindow = document.getElementById('popupWindow');
+    const menuBox = document.querySelector('.menuBox');
+    const isMenuOpen = menuBox.style.display === 'block';
+
+    if (popupWindow.style.display === 'block') {
+        hidePopupWindow();
+    } else {
+        if (isMenuOpen) {
+            hideMenuBox();  // ซ่อน menuBox ถ้า menu เปิดอยู่
+        }
+        showPopupWindow();
+    }
+}
+  function hidePopupWindow() {
+      const popupWindow = document.getElementById('popupWindow');
+      popupWindow.style.display = 'none'; // ซ่อน popup-window
+  
+      // ย้าย popup-window กลับไปที่ body ในโหมดปกติ
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+          document.body.appendChild(popupWindow);
+      }
+  }
+  
+  // จัดการเหตุการณ์ Fullscreen เพื่อย้าย popup-window
+  document.addEventListener('fullscreenchange', () => {
+      const popupWindow = document.getElementById('popupWindow');
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
+          document.getElementById('panorama').appendChild(popupWindow);
+      } else {
+          document.body.appendChild(popupWindow);
+      }
+  });
+  
+  
+// Add event listener to the popup button
+document.getElementById('popupButton').addEventListener('click', togglePopupWindow);
+
+// Add event listener to the close button in the popup
+document.getElementById('closePopup').addEventListener('click', hidePopupWindow);
+  
+  // Ensure the popup button is visible in Fullscreen mode
+  document.addEventListener('fullscreenchange', () => {
+      const popupButton = document.getElementById('popupButton');
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
+          popupButton.style.position = 'fixed';
+      } else {
+          popupButton.style.position = 'absolute';
+      }
+  });
+  // Function to add the popup button into the Pannellum container
+  function ensurePopupButtonInPannellum() {
+      const panoramaContainer = document.getElementById('panorama');
+      const popupButton = document.getElementById('popupButton');
+      if (panoramaContainer && !panoramaContainer.contains(popupButton)) {
+          panoramaContainer.appendChild(popupButton);
+      }
+  }
+  
+  // Function to handle fullscreen changes
+  function onFullscreenChange() {
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
+          ensurePopupButtonInPannellum(); // Ensure the popup button is inside Pannellum in Fullscreen mode
+      } else {
+          // Move back to normal position if needed (optional)
+          const body = document.body;
+          const popupButton = document.getElementById('popupButton');
+          if (body && !body.contains(popupButton)) {
+              body.appendChild(popupButton);
+          }
+      }
+  }
+  
+  // Add event listener for fullscreen changes
+  document.addEventListener('fullscreenchange', onFullscreenChange);
+  document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+  
+
+  //ปุ่มเมนู................................................................................
+// Function to hide the menu box
+function hideMenuBox() {
+    const menuBox = document.querySelector('.menuBox');
+    menuBox.style.display = 'none';
+}
+
+// Function to show the menu box
+function showMenuBox() {
+    const menuBox = document.querySelector('.menuBox');
+    menuBox.style.display = 'block';
+}
+
+  // Function to toggle the menu box
+function toggleMenuBox() {
+    const menuBox = document.querySelector('.menuBox');
+    const popupWindow = document.getElementById('popupWindow');
+    const isPopupOpen = popupWindow.style.display === 'block';
+
+    if (menuBox.style.display === 'block') {
+        hideMenuBox();
+    } else {
+        if (isPopupOpen) {
+            hidePopupWindow();  // ซ่อน popup-window ถ้า popup เปิดอยู่
+        }
+        showMenuBox();
+    }
+}
+
+  // Add event listener to close button inside the menu box
+  document.getElementById('closeMenu').addEventListener('click', hideMenuBox);
+
+  // Add event listener to menu button
+document.getElementById('menuButton').addEventListener('click', toggleMenuBox);
+
+////////////////////////////////////////////      ปุ่มปิด         //////////////////////////////////////////////////////////////////////
+
+
+// Function to handle clicks outside
+function handleClickOutside(event) {
+    const popupWindow = document.getElementById('popupWindow');
+    const menuBox = document.querySelector('.menuBox');
+    const videoOverlay = document.getElementById('videoOverlay');
+    const isClickInsidePopup = popupWindow.contains(event.target);
+    const isClickInsideMenu = menuBox.contains(event.target);
+    const isClickOnHotspot = event.target.closest('.custom-hotspot') !== null;
+    const isClickInsideVideo = videoOverlay.contains(event.target);
+
+    // Check if elements are open
+    const isPopupOpen = popupWindow.style.display === 'block';
+    const isMenuOpen = menuBox.style.display === 'block';
+    const isVideoOpen = videoOverlay.style.display === 'flex';
+
+    if (!isClickInsidePopup && !isClickInsideMenu && !isClickOnHotspot && !isClickInsideVideo) {
+        if (isPopupOpen) hidePopupWindow();
+        if (isMenuOpen) hideMenuBox();
+        if (isVideoOpen) hideVideoOverlay();
+    } else {
+        if ((isClickInsideMenu || isClickInsidePopup) && isVideoOpen) {
+            hideVideoOverlay();
+        }
+        if (isClickInsideMenu && isPopupOpen) {
+            hidePopupWindow();
+        }
+        if (isClickInsidePopup && isMenuOpen) {
+            hideMenuBox();
+        }
+    }
+}
+
+// Add click event listener to panorama
+document.getElementById('panorama').addEventListener('click', handleClickOutside);
+
+// Function to hide the popup window
+function hidePopupWindow() {
+    const popupWindow = document.getElementById('popupWindow');
+    popupWindow.style.display = 'none'; // ซ่อน popup-window
+    document.body.appendChild(popupWindow); // ย้าย popup-window กลับไปที่ body
+    startAutoPan(); // เริ่มการแพน
+}
+
+
+</script>
+  </body>
+  </html>
